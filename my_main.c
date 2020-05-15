@@ -419,4 +419,8 @@ void my_main() {
     free_stack( systems );
     free_matrix( tmp );
   }
+  if (num_frames > 1) {
+      printf("Generating animation...\n");
+      make_animation(name);
+  }
 }
