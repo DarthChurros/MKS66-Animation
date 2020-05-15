@@ -100,6 +100,9 @@ void first_pass() {
   if (num_frames && !found_vary) {
     printf("WARNING: Generating %d identical frames...\n", num_frames);
   }
+  if (!num_frames) {
+    num_frames = 1;
+  }
 
 }
 
