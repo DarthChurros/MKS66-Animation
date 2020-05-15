@@ -94,8 +94,8 @@ void first_pass() {
     exit(0);
   }
   if (num_frames && !strlen(name)) {
-    printf("Basename set to \"image\" by default...\n");
     strcpy(name, "image");
+    printf("Basename set to \"%s\" by default...\n", name);
   }
 
 }
@@ -125,6 +125,29 @@ struct vary_node ** second_pass() {
   struct vary_node **knobs;
   knobs = (struct vary_node **)calloc(num_frames, sizeof(struct vary_node *));
 
+  int i;
+  int j;
+  for (i = 0; i < lastop; i++) {
+    if (op[i].opcode == VARY) {
+      for (j = op[i].op.vary.start_frame; j <= op[i].op.vary.end_frame; j++) {
+        curr = knobs[j];
+        while (curr && curr->next) {
+          curr = curr->next;
+        }
+        if (curr) {
+          curr->next = (struct vary_node)calloc(sizeof(struct vary_node));
+          curr = curr->next;
+        } else {
+          knobs[j] = (struct vary_node)calloc(sizeof(struct vary_node));
+          curr = knobs[j];
+        }
+
+        strncpy(curr->name, op[i].op.vary.p->name, 128);
+        curr->value = op[i].op.vary.start_val + (op[i].op.vary.end_val - op[i].op.vary.start_val) * j / (op[i].op.vary.end_frame - op[i].op.vary.start_frame + 1);
+
+      }
+    }
+  }
 
   return knobs;
 }
