@@ -143,8 +143,7 @@ struct vary_node ** second_pass() {
         }
 
         strncpy(curr->name, op[i].op.vary.p->name, 128);
-        curr->value = op[i].op.vary.start_val + (op[i].op.vary.end_val - op[i].op.vary.start_val) * j / (op[i].op.vary.end_frame - op[i].op.vary.start_frame + 1);
-
+        curr->value = op[i].op.vary.start_val + (op[i].op.vary.end_val - op[i].op.vary.start_val) * (j - op[i].op.vary.start_frame) / (op[i].op.vary.end_frame - op[i].op.vary.start_frame + 1);
       }
     }
   }
@@ -214,12 +213,12 @@ void my_main() {
   g.blue = 255;
 
 
-  systems = new_stack();
-  tmp = new_matrix(4, 1000);
-  clear_screen( t );
-  clear_zbuffer(zb);
 
   for (f = 0; f < num_frames; f++) {
+    systems = new_stack();
+    tmp = new_matrix(4, 1000);
+    clear_screen( t );
+    clear_zbuffer(zb);
     vn = knobs[f];
     while (vn) {
       lookup_symbol(vn->name)->s.value = vn->value;
@@ -340,7 +339,10 @@ void my_main() {
           // printf("Move: %6.2f %6.2f %6.2f",
                  // xval, yval, zval);
           if (op[i].op.move.p != NULL) {
-            // printf("\tknob: %s",op[i].op.move.p->name);
+            xval *= lookup_symbol(op[i].op.move.p->name)->s.value;
+            yval *= lookup_symbol(op[i].op.move.p->name)->s.value;
+            zval *= lookup_symbol(op[i].op.move.p->name)->s.value;
+            // printf("\tmove knob: %6.2f",lookup_symbol(op[i].op.move.p->name)->s.value);
           }
           tmp = make_translate( xval, yval, zval );
           matrix_mult(peek(systems), tmp);
@@ -354,8 +356,10 @@ void my_main() {
           // printf("Scale: %6.2f %6.2f %6.2f",
                  // xval, yval, zval);
           if (op[i].op.scale.p != NULL) {
-            // printf("\tknob: %s",op[i].op.scale.p->name);
-            //printf("\tknob: %s",op[i].op.scale.p->name);
+            xval *= lookup_symbol(op[i].op.scale.p->name)->s.value;
+            yval *= lookup_symbol(op[i].op.scale.p->name)->s.value;
+            zval *= lookup_symbol(op[i].op.scale.p->name)->s.value;
+            // printf("\tscale knob: %6.2f",lookup_symbol(op[i].op.scale.p->name)->s.value);
           }
           tmp = make_scale( xval, yval, zval );
           matrix_mult(peek(systems), tmp);
@@ -363,12 +367,13 @@ void my_main() {
           tmp->lastcol = 0;
           break;
         case ROTATE:
-          theta =  op[i].op.rotate.degrees * (M_PI / 180);
+          theta = op[i].op.rotate.degrees * (M_PI / 180);
           // printf("Rotate: axis: %6.2f degrees: %6.2f",
                  // op[i].op.rotate.axis,
                  // theta);
           if (op[i].op.rotate.p != NULL) {
-            // printf("\tknob: %s",op[i].op.rotate.p->name);
+            theta *= lookup_symbol(op[i].op.rotate.p->name)->s.value;
+            // printf("\trotate knob: %6.2f",lookup_symbol(op[i].op.rotate.p->name)->s.value);
           }
 
           if (op[i].op.rotate.axis == 0 )
@@ -408,10 +413,10 @@ void my_main() {
       save_extension(t, frame_name);
       if (!(f%5)) printf("Saving frame %d...\n", f);
     }
+
+    clear_screen(t);
+    clear_zbuffer(zb);
+    free_stack( systems );
+    free_matrix( tmp );
   }
-
-
-  free_stack( systems );
-  free_matrix( tmp );
-
 }
