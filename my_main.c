@@ -224,6 +224,15 @@ void my_main() {
     printf("%d: ",i);
     switch (op[i].opcode)
       {
+      case FRAMES:
+        printf("Frames: %6.2f", op[i].op.frames.num_frames);
+        break;
+      case VARY:
+        printf("Vary: knob: %s values: %6.2f %6.2f frames %6.2f %6.2f", op[i].op.vary.p->name, op[i].op.vary.start_val, op[i].op.vary.end_val, op[i].op.vary.start_frame, op[i].op.vary.end_frame);
+        break;
+      case BASENAME:
+        printf("Basename: %s", op[i].op.basename.p->name);
+        break;
       case SPHERE:
         printf("Sphere: %6.2f %6.2f %6.2f r=%6.2f",
                op[i].op.sphere.d[0],op[i].op.sphere.d[1],
