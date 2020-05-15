@@ -70,6 +70,33 @@ void first_pass() {
   //These variables are defined at the bottom of symtab.h
   extern int num_frames;
   extern char name[128];
+  num_frames = 0;
+  name[0] = '\0';
+  int found_vary = 0;
+
+  int i;
+  for (i = 0; i < lastop; i++) {
+    switch (op[i].opcode) {
+      case FRAMES:
+        num_frames = op[i].op.frames.num_frames;
+        break;
+      case BASENAME:
+        strncpy(name, op[i].op.basename.p->name, 128);
+        break;
+      case VARY:
+        found_vary = 1;
+        break;
+    }
+  }
+
+  if (found_vary && !num_frames) {
+    printf("Please specify number of frames!\n");
+    exit(0);
+  }
+  if (num_frames && !strlen(name)) {
+    printf("Basename set to \"image\" by default...\n");
+    strcpy(name, "image");
+  }
 
 }
 
