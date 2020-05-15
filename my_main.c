@@ -97,6 +97,9 @@ void first_pass() {
     strcpy(name, "image");
     printf("Basename set to \"%s\" by default...\n", name);
   }
+  if (num_frames && !found_vary) {
+    printf("WARNING: Generating %d identical frames...\n", num_frames);
+  }
 
 }
 
