@@ -135,10 +135,10 @@ struct vary_node ** second_pass() {
           curr = curr->next;
         }
         if (curr) {
-          curr->next = (struct vary_node)calloc(sizeof(struct vary_node));
+          curr->next = (struct vary_node*)calloc(1, sizeof(struct vary_node));
           curr = curr->next;
         } else {
-          knobs[j] = (struct vary_node)calloc(sizeof(struct vary_node));
+          knobs[j] = (struct vary_node*)calloc(1, sizeof(struct vary_node));
           curr = knobs[j];
         }
 
